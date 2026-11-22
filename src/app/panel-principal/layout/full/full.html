@@ -1,0 +1,146 @@
+<div
+  class="workspace"
+  [class.workspace--sidebar-collapsed]="sidebarCollapsed"
+  [class.workspace--dark]="theme === 'dark'"
+>
+  @if (sidebarOpen) {
+    <button
+      class="sidebar-scrim"
+      type="button"
+      aria-label="Cerrar menú"
+      (click)="sidebarOpen = false"
+    ></button>
+  }
+
+  <aside class="sidebar" [class.sidebar--open]="sidebarOpen">
+    <a class="brand" [routerLink]="['/panel']" fragment="resumen">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40" fill="none">
+          <path d="M7 16 20 9l13 7-13 7-13-7Z" />
+          <path d="M12 19v7c4 4 12 4 16 0v-7M33 17v9" />
+        </svg>
+      </span>
+      <span class="brand-copy">
+        <strong>Nexo Académico</strong>
+        <small>ESPACIO ESTUDIANTIL</small>
+      </span>
+    </a>
+
+    <nav class="navigation" aria-label="Navegación principal">
+      <span class="nav-caption">PRINCIPAL</span>
+      @for (item of principal; track item.fragment) {
+        <a
+          class="nav-link"
+          [class.is-active]="isActive(item)"
+          [attr.aria-label]="item.label"
+          [attr.title]="sidebarCollapsed ? item.label : undefined"
+          [routerLink]="item.route ?? ['/panel']"
+          [fragment]="item.route ? undefined : item.fragment"
+        >
+          <span class="nav-icon" aria-hidden="true">{{ item.icon }}</span>
+          <span>{{ item.label }}</span>
+          @if (item.fragment === 'compartidos') {
+            <span class="nav-count">↗</span>
+          }
+        </a>
+      }
+
+      <span class="nav-caption nav-caption--system">SISTEMA</span>
+      @for (item of sistema; track item.fragment) {
+        <a
+          class="nav-link"
+          [class.is-active]="isActive(item)"
+          [attr.aria-label]="item.label"
+          [attr.title]="sidebarCollapsed ? item.label : null"
+          [routerLink]="['/panel']"
+          [fragment]="item.fragment"
+        >
+          <span class="nav-icon" aria-hidden="true">{{ item.icon }}</span>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="security-note">
+        <span class="security-icon" aria-hidden="true">✓</span>
+        <span><strong>Sesión protegida</strong><small>Conexión segura</small></span>
+        <span class="online-dot" aria-label="En línea"></span>
+      </div>
+
+      <div class="user-card">
+        <span class="avatar">{{ initials() }}</span>
+        <span class="user-details">
+          <strong>{{ user?.nombre ?? 'Cargando perfil…' }}</strong>
+          <small>{{ user?.roles?.[0] ?? 'Mi cuenta' }}</small>
+        </span>
+        <button
+          class="logout-icon"
+          type="button"
+          aria-label="Cerrar sesión"
+          title="Cerrar sesión"
+          (click)="logout()"
+        >
+          ↗
+        </button>
+      </div>
+      @if (profileError) {
+        <small class="profile-error" role="alert">{{ profileError }}</small>
+      }
+      <button class="logout-link" type="button" (click)="logout()">
+        <span aria-hidden="true">⇥</span><span class="logout-label">Cerrar sesión</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main-area">
+    <header class="topbar">
+      <button
+        class="menu-toggle menu-toggle--mobile"
+        type="button"
+        aria-label="Abrir menú de navegación"
+        [attr.aria-expanded]="sidebarOpen"
+        (click)="sidebarOpen = !sidebarOpen"
+      >
+        ☰
+      </button>
+      <button
+        class="menu-toggle menu-toggle--desktop"
+        type="button"
+        [attr.aria-label]="sidebarCollapsed ? 'Mostrar barra lateral' : 'Ocultar barra lateral'"
+        [attr.aria-pressed]="!sidebarCollapsed"
+        [title]="sidebarCollapsed ? 'Mostrar barra lateral' : 'Ocultar barra lateral'"
+        (click)="toggleSidebar()"
+      >
+        {{ sidebarCollapsed ? '»' : '«' }}
+      </button>
+      <div class="breadcrumb">
+        <span class="breadcrumb-mark" aria-hidden="true">N</span>
+        <span>Espacio estudiantil</span>
+        <span class="breadcrumb-separator">/</span>
+        <strong>{{ activeSection | titlecase }}</strong>
+      </div>
+      <div class="topbar-actions">
+        <button
+          class="theme-toggle"
+          type="button"
+          [attr.aria-pressed]="theme === 'dark'"
+          [attr.aria-label]="theme === 'dark' ? 'Activar modo claro' : 'Activar modo oscuro'"
+          [title]="theme === 'dark' ? 'Activar modo claro' : 'Activar modo oscuro'"
+          (click)="toggleTheme()"
+        >
+          <span class="theme-icon" aria-hidden="true">{{ theme === 'dark' ? '☀' : '☾' }}</span>
+          <span class="theme-label">{{ theme === 'dark' ? 'Modo claro' : 'Modo oscuro' }}</span>
+        </button>
+        <div class="topbar-meta">
+          <span class="live-indicator"></span>
+          <span>Portal académico</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="page-content">
+      <router-outlet></router-outlet>
+    </section>
+  </main>
+</div>

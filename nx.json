@@ -44,5 +44,6 @@
       "unitTestRunner": "vitest-angular"
     }
   },
-  "defaultProject": "core"
+  "defaultProject": "core",
+  "nxCloudId": "6b03264a5d9d0270a45013f2"
 }

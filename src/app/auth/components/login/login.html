@@ -1,0 +1,272 @@
+<main class="auth-page">
+  <div class="glow glow--top" aria-hidden="true"></div>
+  <div class="glow glow--bottom" aria-hidden="true"></div>
+
+  <div class="auth-scene">
+    <div class="auth-card" [class.is-back]="isBack">
+      <section
+        class="auth-face auth-face--front"
+        [attr.aria-hidden]="isBack ? 'true' : null"
+        [attr.inert]="isBack ? '' : null"
+      >
+        <aside class="brand-panel">
+          <a class="brand" routerLink="/login" aria-label="Nexo Académico, inicio">
+            <span class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 40 40" fill="none">
+                <path d="M7 16 20 9l13 7-13 7-13-7Z" />
+                <path d="M12 19v7c4 4 12 4 16 0v-7M33 17v9" />
+              </svg>
+            </span>
+            <span>
+              <strong>Nexo Académico</strong>
+              <small>ESPACIO ESTUDIANTIL</small>
+            </span>
+          </a>
+
+          <div class="brand-copy">
+            <span class="eyebrow">TU CAMPUS, EN UN SOLO LUGAR</span>
+            <h1>Aprender.<br />Compartir.<br /><span>Avanzar.</span></h1>
+            <p>
+              Accede a tus cursos y archivos académicos con una experiencia
+              segura, sencilla y pensada para ti.
+            </p>
+          </div>
+
+          <div class="brand-footer">
+            <span class="status-dot"></span>
+            <span>Acceso protegido</span>
+            <span class="footer-divider"></span>
+            <span>Comunidad Nexo</span>
+          </div>
+          <div class="brand-orbit brand-orbit--one" aria-hidden="true"></div>
+          <div class="brand-orbit brand-orbit--two" aria-hidden="true"></div>
+        </aside>
+
+        <section class="form-panel">
+          <div class="form-content">
+            <span class="eyebrow form-eyebrow">BIENVENIDO DE NUEVO</span>
+            <h2>Inicia sesión</h2>
+            <p class="form-intro">Ingresa tus datos para continuar en tu espacio.</p>
+
+            <form [formGroup]="loginForm" (ngSubmit)="submitLogin()" novalidate>
+              <label for="cedula">Cédula</label>
+              <div class="input-wrap">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="8" r="3.2" />
+                  <path d="M5.5 20a6.5 6.5 0 0 1 13 0M4 4h3M17 4h3" />
+                </svg>
+                <input
+                  id="cedula"
+                  type="text"
+                  formControlName="cedula"
+                  placeholder="V-12345678"
+                  autocomplete="username"
+                  inputmode="text"
+                  maxlength="30"
+                  required
+                />
+              </div>
+              @if (loginForm.controls.cedula.touched && loginForm.controls.cedula.invalid) {
+                <small class="field-error">Escribe tu número de cédula.</small>
+              }
+
+              <div class="label-row">
+                <label for="password">Contraseña</label>
+                <button class="text-button" type="button" (click)="showPasswordRecovery()">
+                  ¿Olvidaste tu contraseña?
+                </button>
+              </div>
+              <div class="input-wrap">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="5" y="10" width="14" height="11" rx="2" />
+                  <path d="M8 10V7a4 4 0 1 1 8 0v3M12 14v3" />
+                </svg>
+                <input
+                  id="password"
+                  [type]="showPassword ? 'text' : 'password'"
+                  formControlName="password"
+                  placeholder="Tu contraseña"
+                  autocomplete="current-password"
+                  required
+                />
+                <button
+                  class="visibility-button"
+                  type="button"
+                  [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                  (click)="showPassword = !showPassword"
+                >
+                  {{ showPassword ? 'Ocultar' : 'Mostrar' }}
+                </button>
+              </div>
+              @if (loginForm.controls.password.touched && loginForm.controls.password.invalid) {
+                <small class="field-error">Escribe tu contraseña.</small>
+              }
+
+              @if (errorMessage) {
+                <p class="message message--error" role="alert">{{ errorMessage }}</p>
+              }
+
+              <button class="primary-button" type="submit" [disabled]="busy">
+                {{ busy ? 'Verificando…' : 'Ingresar' }}
+                <span aria-hidden="true">→</span>
+              </button>
+            </form>
+
+            <p class="secure-note">
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M10 2.5 16 5v4.6c0 3.8-2.6 6.5-6 7.9-3.4-1.4-6-4.1-6-7.9V5l6-2.5Z" />
+                <path d="m7.5 9.8 1.7 1.7 3.5-3.7" />
+              </svg>
+              Tus datos están protegidos
+            </p>
+          </div>
+        </section>
+      </section>
+
+      <section
+        class="auth-face auth-face--back"
+        [attr.aria-hidden]="isBack ? null : 'true'"
+        [attr.inert]="isBack ? null : ''"
+      >
+        <section class="form-panel form-panel--back">
+          <div class="form-content">
+            @if (mode === 'request') {
+              <span class="eyebrow form-eyebrow">RECUPERACIÓN SEGURA</span>
+              <h2>¿Olvidaste tu contraseña?</h2>
+              <p class="form-intro">
+                Escribe el correo asociado a tu cuenta y te enviaremos un enlace
+                para crear una nueva.
+              </p>
+
+              @if (successMessage) {
+                <p class="message message--success" role="status">{{ successMessage }}</p>
+                <button class="primary-button" type="button" (click)="backToLogin()">
+                  Volver al inicio de sesión <span aria-hidden="true">→</span>
+                </button>
+              } @else {
+                <form [formGroup]="emailForm" (ngSubmit)="requestPasswordChange()" novalidate>
+                  <label for="email">Correo electrónico</label>
+                  <div class="input-wrap">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="3.5" y="5.5" width="17" height="13" rx="2" />
+                      <path d="m5 7 7 5.5L19 7" />
+                    </svg>
+                    <input
+                      id="email"
+                      type="email"
+                      formControlName="email"
+                      placeholder="nombre@institucion.edu"
+                      autocomplete="email"
+                      required
+                    />
+                  </div>
+                  @if (emailForm.controls.email.touched && emailForm.controls.email.invalid) {
+                    <small class="field-error">Escribe un correo válido.</small>
+                  }
+                  @if (errorMessage) {
+                    <p class="message message--error" role="alert">{{ errorMessage }}</p>
+                  }
+                  <button class="primary-button" type="submit" [disabled]="busy">
+                    {{ busy ? 'Enviando…' : 'Enviar enlace' }}
+                    <span aria-hidden="true">→</span>
+                  </button>
+                </form>
+              }
+            } @else if (mode === 'reset') {
+              <span class="eyebrow form-eyebrow">NUEVA CONTRASEÑA</span>
+              <h2>Protege tu cuenta</h2>
+              <p class="form-intro">Elige una contraseña segura para volver a ingresar.</p>
+              <form [formGroup]="passwordForm" (ngSubmit)="confirmPasswordChange()" novalidate>
+                <label for="new-password">Nueva contraseña</label>
+                <div class="input-wrap">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="5" y="10" width="14" height="11" rx="2" />
+                    <path d="M8 10V7a4 4 0 1 1 8 0v3" />
+                  </svg>
+                  <input
+                    id="new-password"
+                    type="password"
+                    formControlName="nueva_password"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required
+                  />
+                </div>
+                <label for="confirm-password">Confirma la contraseña</label>
+                <div class="input-wrap">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="5" y="10" width="14" height="11" rx="2" />
+                    <path d="M8 10V7a4 4 0 1 1 8 0v3" />
+                  </svg>
+                  <input
+                    id="confirm-password"
+                    type="password"
+                    formControlName="confirmar_password"
+                    autocomplete="new-password"
+                    required
+                  />
+                </div>
+                @if (passwordForm.controls.nueva_password.touched && passwordForm.controls.nueva_password.invalid) {
+                  <small class="field-error">Usa al menos 8 caracteres.</small>
+                }
+                @if (errorMessage) {
+                  <p class="message message--error" role="alert">{{ errorMessage }}</p>
+                }
+                <button class="primary-button" type="submit" [disabled]="busy">
+                  {{ busy ? 'Guardando…' : 'Guardar contraseña' }}
+                  <span aria-hidden="true">→</span>
+                </button>
+              </form>
+            } @else if (mode === 'complete') {
+              <span class="success-icon" aria-hidden="true">✓</span>
+              <span class="eyebrow form-eyebrow">CAMBIO COMPLETADO</span>
+              <h2>Todo listo</h2>
+              <p class="message message--success" role="status">{{ successMessage }}</p>
+              <button class="primary-button" type="button" (click)="backToLogin()">
+                Ir a iniciar sesión <span aria-hidden="true">→</span>
+              </button>
+            }
+
+            @if (mode !== 'complete') {
+              <button class="back-button" type="button" (click)="backToLogin()">
+                <span aria-hidden="true">←</span> Volver al inicio de sesión
+              </button>
+            }
+          </div>
+        </section>
+
+        <aside class="brand-panel brand-panel--back">
+          <a class="brand" routerLink="/login" aria-label="Nexo Académico, inicio">
+            <span class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 40 40" fill="none">
+                <path d="M7 16 20 9l13 7-13 7-13-7Z" />
+                <path d="M12 19v7c4 4 12 4 16 0v-7M33 17v9" />
+              </svg>
+            </span>
+            <span>
+              <strong>Nexo Académico</strong>
+              <small>ESPACIO ESTUDIANTIL</small>
+            </span>
+          </a>
+          <div class="brand-copy">
+            <span class="eyebrow">TU CAMPUS, EN UN SOLO LUGAR</span>
+            <h2>Aprender.<br />Compartir.<br /><span>Avanzar.</span></h2>
+            <p>
+              Accede a tus cursos y archivos académicos con una experiencia
+              segura, sencilla y pensada para ti.
+            </p>
+          </div>
+          <div class="brand-footer">
+            <span class="status-dot"></span>
+            <span>Acceso protegido</span>
+            <span class="footer-divider"></span>
+            <span>Comunidad Nexo</span>
+          </div>
+          <div class="brand-orbit brand-orbit--one" aria-hidden="true"></div>
+          <div class="brand-orbit brand-orbit--two" aria-hidden="true"></div>
+        </aside>
+      </section>
+    </div>
+  </div>
+  <footer class="page-footer">© 2026 Nexo Académico <span>·</span> Acceso estudiantil</footer>
+</main>

@@ -1,0 +1,313 @@
+<div class="dashboard">
+  <section class="welcome-banner" id="resumen">
+    <div class="welcome-copy">
+      <span class="eyebrow">PORTAL ACADÉMICO · {{ today | date: 'EEEE, d MMMM y':'':'es' }}</span>
+      <h1>{{ greeting() }}{{ user ? ', ' + user.nombre.split(' ')[0] : '' }}.</h1>
+      <p>Este es tu espacio para aprender, organizarte y seguir avanzando.</p>
+      @if (user?.roles?.length) {
+        <div class="role-list">
+          @for (role of user.roles; track role) {
+            <span class="role">{{ role }}</span>
+          }
+        </div>
+      }
+    </div>
+    <div class="welcome-art" aria-hidden="true">
+      <span class="art-orbit art-orbit--one"></span>
+      <span class="art-orbit art-orbit--two"></span>
+      <span class="art-cap">✦</span>
+      <span class="art-spark art-spark--one">✧</span>
+      <span class="art-spark art-spark--two">·</span>
+    </div>
+  </section>
+
+  @if (errorMessage) {
+    <p class="error-banner" role="alert">{{ errorMessage }}</p>
+  }
+
+  <section class="stats-grid" aria-label="Resumen de actividad">
+    <a class="stat-card stat-card--blue" [routerLink]="['/panel/archivos']">
+      <span class="stat-icon" aria-hidden="true">▤</span>
+      <span class="stat-label">Mis archivos</span>
+      <strong class="stat-value">{{ summary?.estadisticas?.archivos ?? '—' }}</strong>
+      <span class="stat-foot">Documentos en tu espacio <span aria-hidden="true">↗</span></span>
+    </a>
+    <a class="stat-card stat-card--violet" [routerLink]="['/panel']" fragment="compartidos">
+      <span class="stat-icon" aria-hidden="true">⇄</span>
+      <span class="stat-label">Compartidos conmigo</span>
+      <strong class="stat-value">{{ summary?.estadisticas?.compartidos ?? '—' }}</strong>
+      <span class="stat-foot">Archivos de tu comunidad <span aria-hidden="true">↗</span></span>
+    </a>
+    <a class="stat-card stat-card--teal" [routerLink]="['/panel']" fragment="cursos">
+      <span class="stat-icon" aria-hidden="true">▣</span>
+      <span class="stat-label">Mis cursos</span>
+      <strong class="stat-value">{{ summary?.estadisticas?.cursos ?? '—' }}</strong>
+      <span class="stat-foot">Cursos activos <span aria-hidden="true">↗</span></span>
+    </a>
+    <div class="stat-card stat-card--amber">
+      <span class="stat-icon" aria-hidden="true">◷</span>
+      <span class="stat-label">Almacenamiento usado</span>
+      <strong class="stat-value stat-value--storage">
+        {{ summary ? formatBytes(summary.estadisticas.almacenamiento_bytes) : '—' }}
+      </strong>
+      <span class="stat-foot">Espacio de tus archivos</span>
+    </div>
+  </section>
+
+  <section class="analytics-grid" aria-label="Gráficas de actividad">
+    <article class="panel-card chart-panel">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">ÚLTIMOS 7 DÍAS</span>
+          <h2>Actividad de archivos</h2>
+        </div>
+        <span class="chart-total">
+          <strong>{{ weeklyActivityTotal }}</strong>
+          <small>archivos esta semana</small>
+        </span>
+      </div>
+      @if (loading) {
+        <div class="empty-state empty-state--chart">Cargando actividad…</div>
+      } @else {
+        <div class="activity-chart" role="img" aria-label="Archivos cuya última consulta se registró durante los últimos siete días">
+          @for (day of activityChart; track day.date) {
+            <div class="activity-column" [attr.title]="day.label + ': ' + day.count + ' archivos'">
+              <span class="bar-value">{{ day.count }}</span>
+              <div class="bar-track">
+                <span class="bar-fill" [style.height.%]="activityBarHeight(day.count)"></span>
+              </div>
+              <span class="bar-label">{{ day.label }}</span>
+            </div>
+          }
+        </div>
+        <p class="chart-note">Archivos con última consulta registrada en cada día.</p>
+      }
+    </article>
+
+    <article class="panel-card chart-panel resource-chart-panel">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">TUS DOCUMENTOS</span>
+          <h2>Espacios de archivos</h2>
+        </div>
+        <span class="chart-indicator" aria-hidden="true">▤</span>
+      </div>
+      @if (loading) {
+        <div class="empty-state empty-state--chart">Cargando documentos…</div>
+      } @else {
+        <div class="resource-chart" aria-label="Comparación de documentos propios y compartidos">
+          @for (item of resourceChart; track item.kind) {
+            <div class="resource-row">
+              <div class="resource-label">
+                <span>{{ item.label }}</span>
+                <strong>{{ item.count }}</strong>
+              </div>
+              <div class="resource-track">
+                <span
+                  class="resource-fill"
+                  [class.resource-fill--shared]="item.kind === 'shared'"
+                  [style.width.%]="item.width"
+                ></span>
+              </div>
+            </div>
+          }
+        </div>
+        <p class="chart-note">Archivos activos de tu espacio y documentos compartidos contigo.</p>
+      }
+    </article>
+  </section>
+
+  <div class="content-grid">
+    <section class="panel-card recent-panel" id="recientes">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">TU ACTIVIDAD</span>
+          <h2>Archivos recientes</h2>
+        </div>
+        <a [routerLink]="['/panel/archivos']" class="section-link">
+          Mis archivos <span aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      @if (loading) {
+        <div class="empty-state">Cargando tu actividad…</div>
+      } @else if (summary?.archivos_recientes?.length) {
+        <div class="file-list">
+          @for (file of summary.archivos_recientes; track file.uuid) {
+            <article class="file-row">
+              <span class="file-type" aria-hidden="true">PDF</span>
+              <span class="file-info">
+                <strong>{{ file.nombre }}</strong>
+                <small>{{ file.curso || 'Archivo académico' }}</small>
+              </span>
+              <time [attr.datetime]="file.ultimo_acceso">
+                {{ file.ultimo_acceso | date: 'd MMM, HH:mm' }}
+              </time>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="empty-state">
+          <span class="empty-icon" aria-hidden="true">▤</span>
+          <strong>Aún no hay actividad reciente</strong>
+          <p>Cuando abras un archivo, aparecerá aquí para que puedas encontrarlo rápido.</p>
+        </div>
+      }
+    </section>
+
+    <section class="panel-card course-panel" id="cursos">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">TU FORMACIÓN</span>
+          <h2>Cursos activos</h2>
+        </div>
+        <span class="section-count">{{ summary?.estadisticas?.cursos ?? 0 }}</span>
+      </div>
+
+      @if (loading) {
+        <div class="empty-state">Cargando tus cursos…</div>
+      } @else if (summary?.cursos?.length) {
+        <div class="table-scroll">
+          <table class="data-table" aria-label="Tabla de cursos activos">
+            <thead>
+              <tr><th>Curso</th><th>Código</th><th>Período</th><th>Estado</th></tr>
+            </thead>
+            <tbody>
+              @for (course of summary.cursos; track course.codigo) {
+                <tr>
+                  <td class="table-primary">{{ course.nombre }}</td>
+                  <td>{{ course.codigo }}</td>
+                  <td>{{ course.periodo || '—' }}</td>
+                  <td><span class="table-status">Activo</span></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="empty-state empty-state--compact">
+          <span class="empty-icon" aria-hidden="true">▣</span>
+          <strong>Sin cursos activos</strong>
+          <p>Los cursos inscritos aparecerán en este espacio.</p>
+        </div>
+      }
+    </section>
+  </div>
+
+  <div class="lower-grid">
+    <section class="panel-card shared-panel" id="compartidos">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">TRABAJO EN EQUIPO</span>
+          <h2>Compartidos conmigo</h2>
+        </div>
+        <span class="section-count">{{ summary?.estadisticas?.compartidos ?? 0 }}</span>
+      </div>
+      @if (loading) {
+        <div class="empty-state">Cargando archivos compartidos…</div>
+      } @else if (summary?.archivos_compartidos?.length) {
+        <div class="table-scroll">
+          <table class="data-table" aria-label="Tabla de archivos compartidos contigo">
+            <thead>
+              <tr><th>Documento</th><th>Compartido por</th><th>Acceso</th><th>Fecha</th></tr>
+            </thead>
+            <tbody>
+          @for (file of summary.archivos_compartidos; track file.uuid) {
+                <tr>
+                  <td class="table-primary">{{ file.nombre }}</td>
+                  <td>{{ file.compartido_por }}</td>
+                  <td>{{ file.nivel_acceso }}</td>
+                  <td><time [attr.datetime]="file.creado_en">{{ file.creado_en | date: 'd MMM' }}</time></td>
+                </tr>
+          }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="empty-state empty-state--compact">
+          <span class="empty-icon" aria-hidden="true">⇄</span>
+          <strong>Tu espacio compartido está listo</strong>
+          <p>Los documentos que compartan contigo aparecerán aquí.</p>
+        </div>
+      }
+    </section>
+
+    <section class="panel-card storage-panel" id="archivos">
+      <span class="eyebrow">ORGANIZA TU ESPACIO</span>
+      <h2>Todo en orden,<br />todo a tu alcance.</h2>
+      <p>Consulta tus documentos académicos y mantén tus materiales importantes en un solo lugar.</p>
+      <div class="storage-summary">
+        <span class="storage-symbol" aria-hidden="true">▤</span>
+        <span><strong>{{ summary?.estadisticas?.archivos ?? 0 }} archivos</strong><small>Almacenamiento utilizado</small></span>
+        <strong class="storage-size">{{ summary ? formatBytes(summary.estadisticas.almacenamiento_bytes) : '—' }}</strong>
+      </div>
+    </section>
+  </div>
+
+  <section class="sample-section" aria-label="Agenda y entregas de ejemplo">
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">CONTENIDO DE MUESTRA</span>
+        <h2>Organiza tu semana</h2>
+      </div>
+      <span class="eyebrow">No son registros de tu cuenta</span>
+    </div>
+
+    <div class="lower-grid">
+      <article class="panel-card">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">AGENDA ACADÉMICA</span>
+            <h2>Próximas clases</h2>
+          </div>
+          <span class="section-count">{{ sampleAgenda.length }}</span>
+        </div>
+        <div class="file-list">
+          @for (item of sampleAgenda; track item.course) {
+            <article class="file-row">
+              <span class="file-type file-type--shared">{{ item.day }} {{ item.date }}</span>
+              <span class="file-info">
+                <strong>{{ item.course }}</strong>
+                <small>{{ item.topic }} · {{ item.location }}</small>
+              </span>
+              <time>{{ item.time }}</time>
+            </article>
+          }
+        </div>
+      </article>
+
+      <article class="panel-card">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">PLANIFICACIÓN</span>
+            <h2>Entregas próximas</h2>
+          </div>
+          <span class="section-count">{{ sampleDeliverables.length }}</span>
+        </div>
+        <div class="file-list">
+          @for (item of sampleDeliverables; track item.title) {
+            <article class="file-row">
+              <span class="file-type file-type--shared" aria-hidden="true">✓</span>
+              <span class="file-info">
+                <strong>{{ item.title }}</strong>
+                <small>{{ item.course }} · {{ item.status }}</small>
+              </span>
+              <time>{{ item.due }}</time>
+            </article>
+          }
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <div class="footer-grid">
+    <section class="info-card" id="configuracion">
+      <span class="info-icon info-icon--blue" aria-hidden="true">⚙</span>
+      <span><strong>Tu cuenta, a tu manera</strong><small>Administra tus preferencias y mantén tu perfil actualizado.</small></span>
+    </section>
+    <section class="info-card" id="ayuda">
+      <span class="info-icon info-icon--green" aria-hidden="true">?</span>
+      <span><strong>Estamos para ayudarte</strong><small>Si necesitas asistencia, contacta con el equipo académico.</small></span>
+    </section>
+  </div>
+</div>

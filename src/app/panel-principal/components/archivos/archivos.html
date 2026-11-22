@@ -1,0 +1,224 @@
+<main class="files-page">
+  <header class="files-hero">
+    <div>
+      <span class="files-eyebrow">ESPACIO PERSONAL · DOCUMENTOS</span>
+      <h1>Mis archivos</h1>
+      <p>Guarda, encuentra y organiza tus materiales académicos en un solo lugar.</p>
+    </div>
+    <span class="hero-mark" aria-hidden="true">▤</span>
+  </header>
+
+  <section class="summary-grid" aria-label="Resumen de almacenamiento">
+    <mat-card class="summary-card">
+      <span class="summary-icon summary-icon--blue" aria-hidden="true">▤</span>
+      <span class="summary-copy">
+        <small>Archivos guardados</small>
+        <strong>{{ files.length }}</strong>
+      </span>
+    </mat-card>
+    <mat-card class="summary-card">
+      <span class="summary-icon summary-icon--teal" aria-hidden="true">◷</span>
+      <span class="summary-copy">
+        <small>Espacio utilizado</small>
+        <strong>{{ formatBytes(totalSize) }}</strong>
+      </span>
+    </mat-card>
+    <mat-card class="summary-card summary-card--note">
+      <span class="summary-icon summary-icon--violet" aria-hidden="true">✓</span>
+      <span class="summary-copy">
+        <small>Tu biblioteca</small>
+        <strong>Privada y segura</strong>
+      </span>
+    </mat-card>
+  </section>
+
+  <section class="upload-section" aria-label="Subir un archivo">
+    <div class="section-title">
+      <div>
+        <span class="files-eyebrow">AÑADIR DOCUMENTOS</span>
+        <h2>Sube un archivo</h2>
+      </div>
+    </div>
+
+    <input
+      #filePicker
+      class="file-input"
+      type="file"
+      (change)="selectFile($event)"
+      aria-label="Seleccionar archivo para subir"
+    />
+    <div
+      class="dropzone"
+      (dragover)="allowDrop($event)"
+      (drop)="dropFile($event)"
+    >
+    <span class="upload-symbol" aria-hidden="true">
+      <svg viewBox="0 0 24 24" focusable="false">
+        <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 15.5v3A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5v-3" />
+      </svg>
+    </span>
+      <div>
+        <strong>Arrastra tu archivo aquí</strong>
+        <small>o selecciónalo desde tu equipo. Solo tú podrás verlo.</small>
+      </div>
+      <button
+      mat-flat-button
+      color="primary"
+      class="upload-button"
+        type="button"
+        [disabled]="uploading"
+        (click)="filePicker.click()"
+      >
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 15.5v3A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5v-3" />
+      </svg>
+        Seleccionar archivo
+      </button>
+    </div>
+
+    @if (selectedFile) {
+      <div class="selected-file">
+        <span class="selected-name">
+          <strong>{{ selectedFile.name }}</strong>
+          <small>{{ formatBytes(selectedFile.size) }}</small>
+        </span>
+        <button mat-button type="button" (click)="selectedFile = null">
+          Cancelar
+        </button>
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          [disabled]="uploading"
+          (click)="uploadSelected()"
+        >
+          {{ uploading ? 'Subiendo…' : 'Subir archivo' }}
+        </button>
+      </div>
+    }
+
+    @if (uploading) {
+      <mat-progress-bar mode="indeterminate" aria-label="Subiendo archivo" />
+    }
+    @if (successMessage) {
+      <p class="notice notice--success" role="status">{{ successMessage }}</p>
+    }
+    @if (errorMessage) {
+      <p class="notice notice--error" role="alert">{{ errorMessage }}</p>
+    }
+  </section>
+
+  <mat-card class="files-panel">
+    <div class="files-panel-header">
+      <div>
+        <span class="files-eyebrow">TU BIBLIOTECA</span>
+        <h2>Todos tus archivos</h2>
+        <p>Busca por nombre o filtra por formato.</p>
+      </div>
+      <mat-form-field class="search-field" appearance="outline">
+        <svg
+          matPrefix
+          class="search-icon"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <circle cx="10.8" cy="10.8" r="6.3" />
+          <path d="m15.4 15.4 4.1 4.1" />
+        </svg>
+        <mat-label>Buscar en tus archivos</mat-label>
+        <input
+          matInput
+          type="search"
+          autocomplete="off"
+          [value]="searchTerm"
+          (input)="updateSearch($event)"
+          placeholder="Nombre del archivo"
+        />
+        @if (searchTerm) {
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            class="clear-search"
+            aria-label="Limpiar búsqueda"
+            (click)="clearSearch()"
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="filter-list" role="group" aria-label="Filtrar por tipo">
+      @for (filter of filters; track filter.value) {
+        <button
+          mat-button
+          type="button"
+          [class.filter-active]="selectedFilter === filter.value"
+          [attr.aria-pressed]="selectedFilter === filter.value"
+          (click)="setFilter(filter.value)"
+        >
+          {{ filter.label }}
+        </button>
+      }
+    </div>
+
+    @if (loading) {
+      <mat-progress-bar mode="indeterminate" aria-label="Cargando archivos" />
+    } @else if (filteredFiles.length) {
+      <div class="file-list">
+        @for (file of filteredFiles; track file.uuid) {
+          <article class="file-row">
+            <span
+              class="file-badge"
+              [class.file-badge--pdf]="category(file) === 'pdf'"
+              [class.file-badge--imagenes]="category(file) === 'imagenes'"
+            >
+              {{ typeLabel(file) }}
+            </span>
+            <span class="file-details">
+              <strong>{{ file.nombre }}</strong>
+              <small>
+                {{ formatBytes(file.tamano_bytes) }} ·
+                {{ file.creado_en | date: 'd MMM y':'':'es' }}
+              </small>
+            </span>
+            <div class="file-actions">
+              <button
+                mat-button
+                type="button"
+                [disabled]="downloadingUuid === file.uuid"
+                [attr.aria-label]="'Descargar ' + file.nombre"
+                (click)="download(file)"
+              >
+                {{ downloadingUuid === file.uuid ? 'Descargando…' : 'Descargar' }}
+              </button>
+              <button
+                mat-button
+                type="button"
+                class="delete-button"
+                [disabled]="deletingUuid === file.uuid"
+                [attr.aria-label]="'Eliminar ' + file.nombre"
+                (click)="delete(file)"
+              >
+                {{ deletingUuid === file.uuid ? 'Eliminando…' : 'Eliminar' }}
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <span class="empty-mark" aria-hidden="true">▤</span>
+        @if (files.length) {
+          <strong>No encontramos archivos con ese filtro</strong>
+          <p>Prueba con otro nombre o selecciona un tipo distinto.</p>
+        } @else {
+          <strong>Aún no tienes archivos</strong>
+          <p>Sube tu primer documento y aparecerá aquí.</p>
+        }
+      </div>
+    }
+  </mat-card>
+</main>

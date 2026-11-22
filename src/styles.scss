@@ -1,1 +1,444 @@
-/* You can add global styles to this file, and also import other style files */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #f3f7fd;
+}
+
+.workspace {
+  background:
+    radial-gradient(ellipse at 85% 0, #e1edff 0, transparent 34%),
+    #f4f7fc;
+  transition: background-color 180ms ease;
+}
+
+.dashboard .analytics-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.85fr);
+  gap: 16px;
+}
+
+.dashboard .chart-panel {
+  min-height: 267px;
+}
+
+.dashboard .chart-total {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  color: #8a9ab0;
+  font-size: 9px;
+}
+
+.dashboard .chart-total strong {
+  color: #2d5f9a;
+  font-size: 20px;
+}
+
+.dashboard .chart-indicator {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 11px;
+  color: #3877bf;
+  background: #eaf3ff;
+  font-size: 17px;
+}
+
+.dashboard .activity-chart {
+  display: grid;
+  min-height: 150px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: end;
+  gap: clamp(8px, 2.2vw, 22px);
+  padding: 9px 5px 0;
+}
+
+.dashboard .activity-column {
+  display: grid;
+  height: 143px;
+  grid-template-rows: 18px 1fr 19px;
+  justify-items: center;
+  gap: 5px;
+}
+
+.dashboard .bar-value {
+  color: #6d819b;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.dashboard .bar-track {
+  display: flex;
+  width: min(100%, 34px);
+  height: 100%;
+  align-items: flex-end;
+  overflow: hidden;
+  border-radius: 8px 8px 4px 4px;
+  background: #f0f4fa;
+}
+
+.dashboard .bar-fill {
+  display: block;
+  width: 100%;
+  min-height: 3px;
+  border-radius: 8px 8px 4px 4px;
+  background: linear-gradient(180deg, #72a8ed, #3475c5);
+  transition: height 220ms ease;
+}
+
+.dashboard .bar-label {
+  color: #8797ac;
+  font-size: 9px;
+  font-weight: 650;
+  text-transform: capitalize;
+}
+
+.dashboard .chart-note {
+  margin: 12px 0 0;
+  color: #9aa8b9;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.dashboard .empty-state--chart {
+  min-height: 164px;
+}
+
+.dashboard .resource-chart {
+  display: grid;
+  gap: 24px;
+  padding: 17px 2px 6px;
+}
+
+.dashboard .resource-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 9px;
+  color: #6e8098;
+  font-size: 11px;
+}
+
+.dashboard .resource-label strong {
+  color: #344f70;
+  font-size: 12px;
+}
+
+.dashboard .resource-track {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #edf2f8;
+}
+
+.dashboard .resource-fill {
+  display: block;
+  height: 100%;
+  min-width: 3px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #78afe9, #3476c7);
+  transition: width 220ms ease;
+}
+
+.dashboard .resource-fill--shared {
+  background: linear-gradient(90deg, #a89be9, #7261c4);
+}
+
+.dashboard .table-scroll {
+  overflow-x: auto;
+  scrollbar-color: #c8d6e8 transparent;
+  scrollbar-width: thin;
+}
+
+.dashboard .data-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #73839a;
+  font-size: 10px;
+  text-align: left;
+}
+
+.dashboard .data-table th {
+  padding: 10px 11px;
+  border-bottom: 1px solid #e9eef5;
+  color: #92a0b2;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.dashboard .data-table td {
+  max-width: 220px;
+  padding: 13px 11px;
+  border-bottom: 1px solid #f0f3f8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashboard .data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.dashboard .data-table tbody tr:hover {
+  background: #f8faff;
+}
+
+.dashboard .data-table .table-primary {
+  color: #354b68;
+  font-weight: 700;
+}
+
+.dashboard .table-status {
+  display: inline-flex;
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: #278361;
+  background: #eaf7f0;
+  font-size: 8px;
+  font-weight: 750;
+}
+
+.workspace.workspace--dark {
+  color: #e5edf8;
+  background:
+    radial-gradient(ellipse at 85% 0, #1a2e4c 0, transparent 34%),
+    #0d1728;
+}
+
+.workspace.workspace--dark .sidebar,
+.workspace.workspace--dark .topbar {
+  border-color: #26364d;
+  background: #111d30;
+}
+
+.workspace.workspace--dark .sidebar {
+  box-shadow: 8px 0 30px #00000020;
+}
+
+.workspace.workspace--dark .brand,
+.workspace.workspace--dark .breadcrumb strong {
+  color: #e3edf9;
+}
+
+.workspace.workspace--dark .brand-copy small,
+.workspace.workspace--dark .breadcrumb,
+.workspace.workspace--dark .topbar-meta {
+  color: #9aabc2;
+}
+
+.workspace.workspace--dark .nav-caption,
+.workspace.workspace--dark .user-details small {
+  color: #8294ae;
+}
+
+.workspace.workspace--dark .nav-link {
+  color: #a9b8cb;
+}
+
+.workspace.workspace--dark .nav-link:hover {
+  color: #d7e8ff;
+  background: #1a2a40;
+}
+
+.workspace.workspace--dark .nav-link.is-active {
+  border-color: #2b4568;
+  color: #b8d5fa;
+  background: linear-gradient(100deg, #1c3454, #1a2b44);
+}
+
+.workspace.workspace--dark .is-active .nav-icon {
+  background: #233a59;
+}
+
+.workspace.workspace--dark .nav-count,
+.workspace.workspace--dark .breadcrumb-mark,
+.workspace.workspace--dark .menu-toggle,
+.workspace.workspace--dark .theme-toggle {
+  border-color: #2c405b;
+  color: #bdd5f4;
+  background: #1a2a40;
+}
+
+.workspace.workspace--dark .security-note {
+  border-color: #294438;
+  background: #172a27;
+}
+
+.workspace.workspace--dark .security-note strong {
+  color: #b7dece;
+}
+
+.workspace.workspace--dark .security-note small,
+.workspace.workspace--dark .logout-link,
+.workspace.workspace--dark .logout-icon {
+  color: #a1b1c6;
+}
+
+.workspace.workspace--dark .user-card {
+  border-color: #2a3a51;
+  background: #17253a;
+}
+
+.workspace.workspace--dark .user-details strong {
+  color: #dce8f7;
+}
+
+.workspace.workspace--dark .theme-icon {
+  color: #f6cc73;
+}
+
+.workspace.workspace--dark .dashboard {
+  color: #e2ebf7;
+}
+
+.workspace.workspace--dark .dashboard .welcome-banner {
+  border-color: #2b3e59;
+  background:
+    radial-gradient(circle at 85% 50%, #ffffff12 0 1px, transparent 2px),
+    linear-gradient(110deg, #142239 0%, #172841 54%, #1b3455 100%);
+  box-shadow: 0 14px 34px #00000018;
+}
+
+.workspace.workspace--dark .dashboard .welcome-banner h1,
+.workspace.workspace--dark .dashboard .section-heading h2,
+.workspace.workspace--dark .dashboard .storage-panel h2 {
+  color: #e3edf9;
+}
+
+.workspace.workspace--dark .dashboard .welcome-banner p,
+.workspace.workspace--dark .dashboard .storage-panel > p {
+  color: #a4b3c8;
+}
+
+.workspace.workspace--dark .dashboard .eyebrow {
+  color: #8db4e6;
+}
+
+.workspace.workspace--dark .dashboard .role {
+  border-color: #355278;
+  color: #c2d9f7;
+  background: #1d3452;
+}
+
+.workspace.workspace--dark .dashboard .stat-card,
+.workspace.workspace--dark .dashboard .panel-card,
+.workspace.workspace--dark .dashboard .info-card {
+  border-color: #2a3b54;
+  color: #dce7f5;
+  background: #142137;
+  box-shadow: 0 12px 30px #00000018;
+}
+
+.workspace.workspace--dark .dashboard a.stat-card:hover {
+  border-color: #45658e;
+  box-shadow: 0 17px 34px #00000030;
+}
+
+.workspace.workspace--dark .dashboard .stat-value,
+.workspace.workspace--dark .dashboard .section-heading h2,
+.workspace.workspace--dark .dashboard .storage-summary > span:nth-child(2) strong,
+.workspace.workspace--dark .dashboard .info-card strong {
+  color: #e1ebf8;
+}
+
+.workspace.workspace--dark .dashboard .stat-label,
+.workspace.workspace--dark .dashboard .stat-foot,
+.workspace.workspace--dark .dashboard .file-row time,
+.workspace.workspace--dark .dashboard .shared-row time,
+.workspace.workspace--dark .dashboard .file-info small,
+.workspace.workspace--dark .dashboard .course-info small,
+.workspace.workspace--dark .dashboard .chart-note,
+.workspace.workspace--dark .dashboard .resource-label,
+.workspace.workspace--dark .dashboard .info-card small {
+  color: #9aabc1;
+}
+
+.workspace.workspace--dark .dashboard .file-info strong,
+.workspace.workspace--dark .dashboard .course-info strong,
+.workspace.workspace--dark .dashboard .data-table .table-primary {
+  color: #d5e2f2;
+}
+
+.workspace.workspace--dark .dashboard .storage-panel {
+  background:
+    radial-gradient(circle at 100% 0, #1d3452 0, transparent 48%),
+    #142137;
+}
+
+.workspace.workspace--dark .dashboard .storage-summary {
+  border-color: #2d405b;
+  background: #192a42;
+}
+
+.workspace.workspace--dark .dashboard .storage-summary small {
+  color: #9aabc1;
+}
+
+.workspace.workspace--dark .dashboard .data-table th {
+  border-color: #2a3b54;
+  color: #92a5bd;
+}
+
+.workspace.workspace--dark .dashboard .data-table td {
+  border-color: #26364d;
+}
+
+.workspace.workspace--dark .dashboard .data-table tbody tr:hover {
+  background: #192a42;
+}
+
+.workspace.workspace--dark .dashboard .bar-track,
+.workspace.workspace--dark .dashboard .resource-track {
+  background: #22334b;
+}
+
+.workspace.workspace--dark .dashboard .bar-value,
+.workspace.workspace--dark .dashboard .bar-label {
+  color: #a5b5ca;
+}
+
+.workspace.workspace--dark .dashboard .resource-label strong {
+  color: #d7e3f2;
+}
+
+.workspace.workspace--dark .dashboard .section-count,
+.workspace.workspace--dark .dashboard .chart-indicator {
+  color: #bdd7f7;
+  background: #203654;
+}
+
+.workspace.workspace--dark .dashboard .chart-total strong {
+  color: #a9c9f0;
+}
+
+@media (max-width: 1100px) {
+  .dashboard .analytics-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .dashboard .chart-panel {
+    min-height: 250px;
+  }
+
+  .dashboard .activity-chart {
+    gap: 8px;
+  }
+
+  .dashboard .data-table {
+    min-width: 440px;
+  }
+}
