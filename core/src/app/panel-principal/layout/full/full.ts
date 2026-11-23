@@ -33,6 +33,7 @@ export class Full implements OnInit {
     { label: 'Compartidos', icon: '⇄', fragment: 'compartidos' },
     { label: 'Recientes', icon: '◷', fragment: 'recientes' },
     { label: 'Cursos', icon: '▣', fragment: 'cursos' },
+    { label: 'Registros', icon: '☰', fragment: 'registros' },
   ];
 
   readonly sistema: MenuItem[] = [
